@@ -3,101 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>WebAR Fullscreen Test</title>
+  <title>WebAR with Model & Sound</title>
 
-  <!-- A-Frame and AR.js -->
+  <!-- A-Frame + AR.js -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://rawcdn.githack.com/AR-js-org/AR.js/3.3.2/aframe/build/aframe-ar.js"></script>
 
   <style>
-    /* Fullscreen for AR */
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;  /* prevent scrollbars */
+      overflow: hidden;
       width: 100%;
       height: 100%;
       display: block;
-      
-    }
-
-    /* Optional: a start button overlay for audio/user gesture */
-    #startBtn {
-      position: fixed;
-      z-index: 9999;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      padding: 16px 24px;
-      font-size: 18px;
-      background: #0b84ff;
-      color: white;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
-
-    #hint {
-      position: fixed;
-      bottom: 8px;
-      left: 8px;
-      right: 8px;
-      color: white;
-      font-size: 14px;
-      text-align: center;
-      z-index: 9998;
+      background-color: black;
     }
   </style>
 </head>
 <body>
 
-  <!-- <button id="startBtn">Tap to Start AR</button> -->
-  <div id="hint">Point camera at the QR marker after the scene starts.</div>
-
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
+    
     <!-- Marker -->
     <a-marker type="pattern" url="pattern-qr.patt" emitevents="true" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="2">
-      <!-- Test box for debugging -->
+      
+      <!-- Test box (optional, can remove later) -->
       <!-- <a-box position="0 0.5 0" color="red"></a-box> -->
 
-      <!-- Your 3D model -->
-      <a-entity id="model" gltf-model="model.glb" scale="1 1 1" rotation="0 180 0" animation-mixer visible="false"></a-entity>
+      <!-- 3D model -->
+      <a-entity id="model" gltf-model="model.glb" scale="0.2 0.2 0.2" rotation="0 0 0" animation-mixer visible="false"></a-entity>
 
-      <!-- Optional sound -->
-      <a-sound id="bgm" src="bgm.mp3" preload="auto"></a-sound>
+      <!-- Sound -->
+      <a-sound id="bgm" src="click.mp3" autoplay="false" loop="true"></a-sound>
+      
     </a-marker>
 
     <a-entity camera></a-entity>
   </a-scene>
 
   <script>
-    const startBtn = document.getElementById('startBtn');
-    const audioEl = document.getElementById('bgm');
     const marker = document.querySelector('a-marker');
     const model = document.getElementById('model');
-
-    let started = false;
-
-    startBtn.addEventListener('click', async () => {
-      try {
-        await audioEl.play();
-        audioEl.pause();  // initialize audio context
-      } catch(e) {
-        console.warn('Audio init failed', e);
-      }
-      startBtn.style.display = 'none';
-      started = true;
-    });
+    const audio = document.getElementById('click');
 
     marker.addEventListener('markerFound', () => {
       model.setAttribute('visible', 'true');
-      if (started) audioEl.play().catch(e => console.warn('audio play failed', e));
+      audio.play().catch(e => console.warn('Audio play failed', e));
     });
 
     marker.addEventListener('markerLost', () => {
       model.setAttribute('visible', 'false');
-      audioEl.pause();
-      audioEl.currentTime = 0;
+      audio.pause();
+      audio.currentTime = 0;
     });
   </script>
 

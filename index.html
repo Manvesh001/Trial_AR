@@ -8,7 +8,7 @@
     <!-- Latest A-Frame -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-    <!-- AR.js (aframe-ar.js build) -->
+    <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
     <style>
@@ -32,17 +32,14 @@
     </style>
   </head>
   <body>
-    <!-- Overlay to unlock audio and start AR -->
-    <div id="overlay">Tap to start AR experience</div>
+    <div id="overlay">Waiting for camera permission…</div>
 
     <a-scene
       embedded
-      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
+      arjs="sourceType: webcam; debugUIEnabled: true;"
       vr-mode-ui="enabled: false"
-      renderer="logarithmicDepthBuffer: true;"
       playsinline
     >
-      <!-- Asset management system -->
       <a-assets>
         <a-asset-item
           id="model"
@@ -53,18 +50,15 @@
         <audio id="clickSound" src="./click.mp3" preload="auto" crossorigin="anonymous"></audio>
       </a-assets>
 
-      <!-- Marker -->
       <a-marker type="pattern" url="./pattern-qr.patt">
         <a-entity
           id="modelEntity"
           gltf-model="#model"
           scale="0.5 0.5 0.5"
           position="0 0 0"
-          rotation="0 0 0"
         ></a-entity>
       </a-marker>
 
-      <!-- Required for AR.js -->
       <a-entity camera></a-entity>
     </a-scene>
 
@@ -73,12 +67,8 @@
       const clickSound = document.getElementById('clickSound');
       const modelEntity = document.getElementById('modelEntity');
 
-      overlay.addEventListener('click', () => {
-        // Try unlocking audio on iOS/Android
-        clickSound.play().catch(() => {
-          console.log('Audio will play on user interaction later');
-        });
-
+      // Remove overlay once AR.js video is ready
+      document.querySelector('a-scene').addEventListener('arReady', () => {
         overlay.style.display = 'none';
       });
 

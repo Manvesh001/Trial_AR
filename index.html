@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Trial AR</title>
+    <title>Trial AR Debug</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Latest A-Frame -->
@@ -27,9 +27,7 @@
         color: white;
         font-size: 1.5rem;
         z-index: 10;
-        cursor: pointer;
       }
-      /* Ensure video background is scaled properly */
       video {
         object-fit: cover !important;
       }
@@ -40,12 +38,13 @@
 
     <a-scene
       embedded
-      arjs="sourceType: webcam; facingMode: environment; sourceWidth:1280; sourceHeight:720; displayWidth:1280; displayHeight:720; debugUIEnabled: false;"
+      stats
+      inspector
+      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: true;"
       vr-mode-ui="enabled: false"
       renderer="logarithmicDepthBuffer: true;"
       playsinline
     >
-      <!-- Asset management system -->
       <a-assets>
         <a-asset-item
           id="model"
@@ -53,37 +52,28 @@
           response-type="arraybuffer"
           crossorigin="anonymous"
         ></a-asset-item>
-        <audio id="clickSound" src="./click.mp3" preload="auto" crossorigin="anonymous"></audio>
       </a-assets>
 
-      <!-- Marker -->
       <a-marker type="pattern" url="./pattern-qr.patt">
+        <!-- Test box (shows if marker is detected) -->
+        <a-box position="0 0.5 0" depth="0.5" height="0.5" width="0.5" color="red"></a-box>
+
+        <!-- Your model -->
         <a-entity
           id="modelEntity"
           gltf-model="#model"
-          scale="20 20 20"
-          position="0 0 0"
+          scale="2 2 2"
+          position="0 0.5 0"
         ></a-entity>
       </a-marker>
 
-      <!-- Required for AR.js -->
       <a-entity camera></a-entity>
     </a-scene>
 
     <script>
       const overlay = document.getElementById('overlay');
-      const clickSound = document.getElementById('clickSound');
-      const modelEntity = document.getElementById('modelEntity');
-
-      // Remove overlay once AR.js video is ready
       document.querySelector('a-scene').addEventListener('arReady', () => {
         overlay.style.display = 'none';
-      });
-
-      // Play sound when model is clicked
-      modelEntity.addEventListener('click', () => {
-        clickSound.currentTime = 0;
-        clickSound.play().catch(err => console.log('Audio blocked:', err));
       });
     </script>
   </body>
